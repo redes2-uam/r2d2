@@ -2,7 +2,6 @@
 import logging, re, ircTests, time
 from ircTests import IRCTest, TipoTest        
 from codes import codes
-import select
 
 class AdvancedTest(IRCTest):
     
