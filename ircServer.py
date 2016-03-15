@@ -8,6 +8,8 @@ import ircparser
 """
 class IRCServer(object):
     
+    REGEXP_PING = r'PING (\S+)'
+    
     def __init__(self, sDroid):
         self.sd = sDroid
         
@@ -78,11 +80,31 @@ class IRCServer(object):
         def timeout_handler(signum, frame):
             raise AssertionError("Ha saltado el timeout esperando la expresión %r" % regexp)
         signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(timeout)  
-        line = self.sd.connections[nick].readline().rstrip()        
-        signal.alarm(0)
         
-        logging.debug("<< SERVER: %s" % line)
+        while True:
+            # Establecemos el timeout y leemos una línea
+            signal.alarm(timeout)  
+            line = self.sd.connections[nick].readline().rstrip()        
+            signal.alarm(0)                
+        
+            # Si se trata de un PING enviado por el servidor, respondemos aquí
+            # PING 1079550066
+            # Reply: PONG 1079550066                              
+                
+            # Comprobamos que el nombre del directorio tiene el formato requerido, G-CCCC-NN-PX
+            m = re.match(self.REGEXP_PING, line)
+        
+            if m is not None:
+                # Hemos recibido un PING, respondemos
+                params = m.group(1)                                          
+            
+                logging.debug("<< SERVER: %s" % line)            
+                self.send(nick, "PONG %s" % params)
+            else:
+                # Si no se trata de un PING, salimos y devolvemos la línea leida
+                logging.debug("<< SERVER: %s" % line)
+                break
+            
         return line
     
     """

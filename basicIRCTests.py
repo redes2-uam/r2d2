@@ -20,7 +20,7 @@ class BasicTest(IRCTest):
 class TestConexionRegistro(BasicTest):
     
     def execute(self):        
-                        
+                                
         # Conexión al servidor
         self.ircServer.connect(self.testNick)                                                             
         
@@ -177,72 +177,7 @@ class TestComandoWhois(BasicTest):
   1. Crea un canal de nombre aleatorio. 
   2. Une al usuario de pruebas al canal, y envía el comando WHOIS apropiado. 
   3. Verifica la respuesta y espera encontrar los RPL_WHOISCHANNELS y RPL_ENDWHOIS. Opcionalmente \
-también los comandos RPL_WHOISUSER y RPL_WHOISSERVER (no son imprescindibles, pero suman puntuación)."""
-
-    
-"""
-    INFO: Comprueba el funcionamiento del comando WHOIS. Para ello envia el comando y parsea la respuesta
-    DEPENDENCIAS: JOIN
-"""
-class TestComandoWhois2(BasicTest):
-    
-    def execute(self):                
-
-        # Puntuación por los mensajes extra (+ 20%)        
-        receivedMessages = []        
-        
-        # Conexión y envio del comnado        
-        self.ircServer.connect(self.testNick)
-        
-        # Conectamos el usuario a un canal aleatorio
-        tempCanal = self.ircServer.generateRandomString()
-        self.ircServer.joinChannel(self.testNick, tempCanal)
-        
-        # Ahora enviamos el comando            
-        self.ircServer.send(self.testNick, "WHOIS %s" % self.testNick)
-                      
-        # Recepción y parseo de la respuesta                      
-        message = ircparser.translate(self.ircServer._readLine(self.testNick))                                       
-        self.ircServer.expect(self.testNick, r":\S+ NICK :%s" % nuevoNick)
-        
-        # TODO: Este bucle puede no terminar nunca, mejorar                 
-        # Hacer una función que devuelva una lista de 'message', con un límite máxmo
-        # de líneas leidas antes de dar ERROR
-        while (message['command'] is not "RPL_ENDOFWHOIS"):
-            # Cada mensaje que se muestre en la respuesta suma puntuación                
-            if message['command'] == 'RPL_WHOISUSER':
-                localScore += extraScore                   
-            if message['command'] == 'RPL_WHOISSERVER':
-                localScore += extraScore                                    
-            # Obtenemos los canales en los que está este usuario
-            if (message['command'] == 'RPL_WHOISCHANNELS'):
-                # Comprobamos que está el canal recién creado
-                assert "@#" + tempCanal in message['params'][2].split(' '),\
-                    "Comando WHOIS no devuelve correctamente los canales en los que está el usuario"                
-                receivedMessages.append('RPL_WHOISCHANNELS')
-                
-            # Recepción y parseo de la respuesta                      
-            message = ircparser.translate(self.ircServer._readLine(self.testNick))
-        
-        # Comprobación de que se han recibido los mensajes correctos
-        # Detección de duplicados
-        assert len(set(receivedMessages)) == len(receivedMessages) and \
-            'RPL_WHOISCHANNELS' in receivedMessages, "No se ha recibido el código RPL_WHOISCHANNELS del servidor"            
-                    
-        # Todo ha ido bien
-        # return self.getScore() + localScore
-        return self.getScore()
-            
-    def getDescription(self):
-        return type(self).__name__ + " - Prueba del comando WHOIS" 
-        
-    def getInfo(self):
-        return """Esta prueba verifica el funcionamiento del comando WHOIS de la siguientes forma: 
-  1. Crea un canal de nombre aleatorio. 
-  2. Une al usuario de pruebas al canal, y envía el comando WHOIS apropiado. 
-  3. Verifica la respuesta y espera encontrar los RPL_WHOISCHANNELS y RPL_ENDWHOIS. Opcionalmente \
-también los comandos RPL_WHOISUSER y RPL_WHOISSERVER (no son imprescindibles, pero suman puntuación)."""
-            
+también los comandos RPL_WHOISUSER y RPL_WHOISSERVER (no son imprescindibles, pero suman puntuación)."""            
 
 """
     INFO: Comprueba el funcionamiento del comando NAMES
