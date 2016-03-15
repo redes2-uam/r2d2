@@ -30,6 +30,18 @@ class Corrector(object):
         
         return numGrupo, numPareja, numPractica
     
+    def extractFicheroPractica (self, ruta):
+        # Abrimos el fichero en modo lectura
+        try:
+            fp = open (ruta, "r")
+        except IOError:
+            raise AssertionError("No se encuentra el fichero %r" % ruta)                        
+        
+        # Leemos la prímera línea, que debe ser del formato G-CCCC-NN-PX
+        idGrupo = fp.readline()
+        
+        return idGrupo
+    
     """
         FUNCIÓN: Función que parsea el fichero de autores y comprueba su validez
         RECIBE: Ruta al fichero
@@ -39,14 +51,9 @@ class Corrector(object):
                 
         listaAutores = []        
         
-        # Abrimos el fichero en modo lectura
-        try:
-            fp = open (ruta, "r")
-        except IOError:
-            raise AssertionError("No se encuentra el fichero %r" % ruta)                        
-        
-        # Leemos la prímera línea, que debe ser del formato G-CCCC-NN-PX
-        idGrupo = fp.readline()        
+        # Leemos el nombre del fichero de la práctica
+        idGrupo = self.extractFicheroPractica(ruta)
+               
         # Comprobamos que el nombre del directorio tiene el formato requerido, G-CCCC-NN-PX
         numGrupo, numPareja, numPractica = self._parseIdentificador(REGEXP_PRACTICA, idGrupo)   
         
