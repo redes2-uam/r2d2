@@ -38,9 +38,9 @@ class Corrector(object):
             raise AssertionError("No se encuentra el fichero %r" % ruta)                        
         
         # Leemos la prímera línea, que debe ser del formato G-CCCC-NN-PX
-        idGrupo = fp.readline()
+        idGrupo = str(fp.readline())
         
-        return idGrupo
+        return idGrupo, fp
     
     """
         FUNCIÓN: Función que parsea el fichero de autores y comprueba su validez
@@ -52,7 +52,7 @@ class Corrector(object):
         listaAutores = []        
         
         # Leemos el nombre del fichero de la práctica
-        idGrupo = self.extractFicheroPractica(ruta)
+        idGrupo, fp = self.extractFicheroPractica(ruta)
                
         # Comprobamos que el nombre del directorio tiene el formato requerido, G-CCCC-NN-PX
         numGrupo, numPareja, numPractica = self._parseIdentificador(REGEXP_PRACTICA, idGrupo)   
@@ -110,6 +110,7 @@ class Corrector(object):
         except Exception:
             print colored("ERROR: ", 'red') + \
                 colored("Extrayendo archivo [%s]" % nombreFichero, 'yellow')
+            assert False, "Al extraer el tar.gz debe crearse automáticamente una carpeta, no extraerse en el mismo directorio"
         finally:                    
             out.close()                                
 

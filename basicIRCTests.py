@@ -476,7 +476,7 @@ class TestEmpaquetado(BasicTest):
         corrector = Corrector(self.sd)                                                             
         
         # Comprobamos y parseamos el fichero autores.txt
-        ficheroPractica = corrector.extractFicheroPractica('autores.txt')
+        ficheroPractica, fp = corrector.extractFicheroPractica('autores.txt')
         
         # Comprobamos el empaquetado
         corrector.checkEmpaquetado(ficheroPractica.rstrip('\r\n ') + '.tar.gz')
