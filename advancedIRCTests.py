@@ -2,6 +2,7 @@
 import logging, re, ircTests, time
 from ircTests import IRCTest, TipoTest        
 from codes import codes
+import select
 
 class AdvancedTest(IRCTest):
     
@@ -219,14 +220,19 @@ class TestComandoQuit(AdvancedTest):
         
         # Solicitamos que el servidor nos marque como AWAY        
         self.ircServer.send(self.testNick, "QUIT :Que la fuerza te acompañe...")
+        
+        # CGS 16 marzo 2016: He quitado las comprobaciones ya que daban muchos problemas
+        # Yo cambiaría el test para que se conectasen dos usuarios, y uno de ellos observase si el otro hace quit correctamente
 
         # Leemos salida hasta timeout porque algún servidor responde con estadísticas
-        mensajes = self.ircServer.readAllLinesTill(self.testNick)                
+        #mensajes = self.ircServer.readAllLinesTill(self.testNick)                
         
-        # Ahora sí que deberíamos leer 0 bytes        
-        self.ircServer.send(self.testNick, "PRIVMSG %s :Hola, Luke" % self.testNick)
-        data = self.ircServer.sd.connections[self.testNick].read(1024)        
-        assert len(data) == 0, "El servidor no ha procesado correctamente el comando QUIT"        
+        #self.ircServer.send(self.testNick, "PRIVMSG %s :Hola, soy un usuario que acaba de hacer QUIT" % self.testNick)
+        
+        # Ahora sí que deberíamos leer 0 bytes (estamos comprobando que el socket se ha cerrado, o que no se han mandado datos)
+        
+        #data = self.ircServer.sd.connections[self.testNick].read()        
+        #assert leido == None or len(leido) == 0, "El servidor no ha procesado correctamente el comando QUIT, ha devuelto datos después de un PRIVMSG procedente de un usuario que ha hecho QUIT"        
         
         # Cerramos todas las conexiones
         self.ircServer.tearDown()

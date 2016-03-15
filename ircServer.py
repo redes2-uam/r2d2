@@ -91,7 +91,6 @@ class IRCServer(object):
             # PING 1079550066
             # Reply: PONG 1079550066                              
                 
-            # Comprobamos que el nombre del directorio tiene el formato requerido, G-CCCC-NN-PX
             m = re.match(self.REGEXP_PING, line)
         
             if m is not None:
@@ -99,7 +98,9 @@ class IRCServer(object):
                 params = m.group(1)                                          
             
                 logging.debug("<< SERVER: %s" % line)            
-                self.send(nick, "PONG %s" % params)
+                pong_reply = "PONG %s" % params
+                pong_reply.rstrip('\r\n ')
+                self.send(nick, pong_reply)
             else:
                 # Si no se trata de un PING, salimos y devolvemos la línea leida
                 logging.debug("<< SERVER: %s" % line)
@@ -267,7 +268,10 @@ class IRCServer(object):
         self.send(tempNick, "LIST")
                           
         # Recepción y parseo de la respuesta                      
-        message = ircparser.translate(self._readLine(tempNick))                                        
+        leido = self._readLine(tempNick)
+        assert len(leido) > 0, "Se ha recibido una respuesta vacía al comando LIST"
+        message = ircparser.translate(leido)                                        
+        
         
         while (message['command'] is not "RPL_LISTEND"):
             # Cada mensaje que se muestre en la respuesta suma puntuación                
