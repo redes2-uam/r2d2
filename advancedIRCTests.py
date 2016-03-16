@@ -217,21 +217,20 @@ class TestComandoQuit(AdvancedTest):
         # Conexión al servidor        
         self.ircServer.connect(self.testNick)
         
-        # Solicitamos que el servidor nos marque como AWAY        
         self.ircServer.send(self.testNick, "QUIT :Que la fuerza te acompañe...")
         
         # CGS 16 marzo 2016: He quitado las comprobaciones ya que daban muchos problemas
         # Yo cambiaría el test para que se conectasen dos usuarios, y uno de ellos observase si el otro hace quit correctamente
 
         # Leemos salida hasta timeout porque algún servidor responde con estadísticas
-        #mensajes = self.ircServer.readAllLinesTill(self.testNick)                
+        #mensajes = self.ircServer.readAllLinesTill(self.testNick)
         
-        #self.ircServer.send(self.testNick, "PRIVMSG %s :Hola, soy un usuario que acaba de hacer QUIT" % self.testNick)
+        # CGS: Aquí necesitamos alguna forma de verificar que se ha cerrado el socket, sin que se muestre un error
         
-        # Ahora sí que deberíamos leer 0 bytes (estamos comprobando que el socket se ha cerrado, o que no se han mandado datos)
-        
-        #data = self.ircServer.sd.connections[self.testNick].read()        
-        #assert leido == None or len(leido) == 0, "El servidor no ha procesado correctamente el comando QUIT, ha devuelto datos después de un PRIVMSG procedente de un usuario que ha hecho QUIT"        
+        #if self.testNick in self.ircServer.sd.connections:
+        #    logging.debug("AVISO: El servidor no ha cerrado el socket de %s" % self.testNick)
+        #else:
+        #    logging.debug("El servidor ha cerrado el socket de %s" % self.testNick)
         
         # Cerramos todas las conexiones
         self.ircServer.tearDown()
@@ -260,7 +259,6 @@ class TestComandoMOTD(AdvancedTest):
         # Conexión al servidor        
         self.ircServer.connect(self.testNick)
         
-        # Solicitamos que el servidor nos marque como AWAY        
         self.ircServer.send(self.testNick, "MOTD")                        
 
         # Leemos la respuesta        
@@ -295,7 +293,6 @@ class TestComandoDCCSend(AdvancedTest):
         # Conexión al servidor        
         self.ircServer.connect(self.testNick)
         
-        # Solicitamos que el servidor nos marque como AWAY        
         self.ircServer.send(self.testNick, "PRIVMSG %s :%sDCC SEND megane.pdf 3232235779 34382 1269453%s" % \
                             (self.testNick, b'\x01', b'\x01'))                                         
         #>> :oscar!~oscar@124.Red-95-122-126.staticIP.rima-tde.net PRIVMSG pepe :DCC SEND megane.pdf 1601863292 56289 1269453
@@ -307,7 +304,7 @@ class TestComandoDCCSend(AdvancedTest):
         return self.getScore()
     
     def getDescription(self):
-        return type(self).__name__ + " - Comprueba el funcionamiento del comando AWAY" 
+        return type(self).__name__ + " - Comprueba el funcionamiento del comando DCCSend" 
         
     def getInfo(self):
         return """"""

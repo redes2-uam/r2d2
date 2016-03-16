@@ -96,6 +96,7 @@ class Corrector(object):
         logging.debug("Comprobando empaquetado [%s]..." %  nombreFichero)
         
         # 1. Comprobaciones sobre el fichero .tar.gz
+        assert os.path.exists(nombreFichero), "No se encuentra el fichero %s" % nombreFichero
         assert tarfile.is_tarfile(nombreFichero), "El paquete no es un fichero TAR válido"
         
         # Comprobamos que el nombre del directorio tiene el formato requerido, G-CCCC-NN-PX

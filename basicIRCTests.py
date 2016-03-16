@@ -313,6 +313,7 @@ class TestComandoKick(BasicTest):
         
         # Echamos al usuario 2 del canal        
         self.ircServer.send(self.testNick, "KICK #%s %s :Fuera de aqui, rata!" % (nuevoCanal, self.testNick2))
+        logging.debug("Ahora se espera recibir el KICK por el socket de %s" % self.testNick2)
         self.ircServer.expect(self.testNick2, r":\S+ KICK #%s %s :Fuera de aqui, rata!" % (nuevoCanal, self.testNick2))
         
         # Volvemos a unir el usario 2 al canal...
