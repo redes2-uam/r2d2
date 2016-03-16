@@ -296,7 +296,9 @@ class IRCServer(object):
         self.send(nick, "NAMES #%s" % nombreCanal)
                           
         # Recepción y parseo de la respuesta                      
-        message = ircparser.translate(self._readLine(nick))                                        
+        leido = self._readLine(nick)
+        assert len(leido) > 0, "Se ha recibido una respuesta vacía al comando NAMES"
+        message = ircparser.translate(leido)                                        
         
         while (message['command'] is not "RPL_ENDOFNAMES"):
             # Cada mensaje que se muestre en la respuesta suma puntuación                

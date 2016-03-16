@@ -102,6 +102,11 @@ class Corrector(object):
         numGrupo, numPareja, numPractica = self._parseIdentificador(REGEXP_FICH_PRACTICA, \
                                                                     os.path.basename(nombreFichero))        
 
+        # Debemos aplicar la función dos veces porque .tar.gz son dos extensiones                        
+        rutaBase = os.path.splitext(os.path.splitext(nombreFichero)[0])[0]
+        
+        assert not os.path.exists(rutaBase), "Ya existe la ruta base %s, probablemente de una ejecución previa. Debe borrarla para que sea válido el test de empaquetado" % rutaBase
+
         # 2. Descomprimiendo fichero...                
         logging.debug("Descomprimiendo archivo [%s]..." % nombreFichero)
         out = tarfile.open(nombreFichero)
@@ -113,11 +118,9 @@ class Corrector(object):
             assert False, "Al extraer el tar.gz debe crearse automáticamente una carpeta, no extraerse en el mismo directorio"
         finally:                    
             out.close()                                
-
-        # Debemos aplicar la funció dos veces porque .tar.gz son dos extensiones                        
-        rutaBase = os.path.splitext(os.path.splitext(nombreFichero)[0])[0]
         
         # Comprobamos que existen los ficheros necesarios
+        assert os.path.exists(rutaBase), "No se encuentra la ruta base %s, el tar.gz debe auto-descomprimirse creando este directorio" % rutaBase
         rutaMakefile = os.path.join(rutaBase, "Makefile")
         assert os.path.exists(rutaMakefile), "No se encuentra el fichero Makefile en %s" % rutaMakefile
         rutaEjecutableServidor = os.path.join(rutaBase, "irc_server")
